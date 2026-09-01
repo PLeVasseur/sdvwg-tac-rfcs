@@ -1,12 +1,14 @@
 - RFC Title: Eclipse SDV Reference Vehicle Architecture and Capability Map
 - Submission Date: 2026-09-01
 - RFC PR: (replace with the pull request URL)
-- Follow-on Actions: Define and maintain the reference architecture, capability map, and practical example after RFC acceptance
+- Follow-on Actions: Define and maintain the reference architecture, capability map, practical example, and integration with the Eclipse SDV Landscape after RFC acceptance
 
 # Summary
 [summary]: #summary
 
 This RFC proposes that the Eclipse SDV WG TAC create and maintain a simple, capability-first **Reference Vehicle Architecture** that provides a common technical context for the Eclipse SDV project ecosystem. Every Eclipse SDV project in Working Group purview should be mapped to one or more capabilities in that architecture, including its primary role, relevant interfaces, and integration points. The architecture should be grounded by one intentionally small and practical end-to-end example — a "Hello Vehicle" scenario — so that the TAC can discuss projects not only individually, but as parts of a coherent software-defined vehicle system.
+
+The resulting architecture and capability map should be connected directly to the [Eclipse SDV Landscape][sdv-landscape-project]. The Landscape remains the public, visual overview and discovery entry point for Eclipse SDV projects, while the Reference Vehicle Architecture adds the technical relationship and capability view needed to explain how those projects can form a coherent vehicle software system.
 
 # Motivation
 [motivation]: #motivation
@@ -25,6 +27,10 @@ Today it is much easier to explain what an individual project does than to answe
 
 Without a shared architecture, TAC discussions can become project-centric rather than system-centric. This makes it harder to build a coherent technical roadmap for the Working Group and harder for new contributors, adopters, project leads, and Steering Committee members to understand how the portfolio fits together.
 
+The [Eclipse SDV Landscape][sdv-landscape-project] already provides the official, community-maintained visual overview of Eclipse SDV projects and organizes them by functional categories. Its current scope intentionally does not attempt to describe technical integrations or dependencies between projects. This RFC complements that work by providing the missing architectural and capability relationship layer rather than creating a second independent project catalog.
+
+The Landscape project also identifies an **architecture view** as future work. The Reference Vehicle Architecture proposed here gives the TAC a concrete process and technical model from which such a view can be derived.
+
 The goal of this RFC is not to define an OEM production E/E architecture, mandate a single technology stack, or create a new specification. The goal is to provide a **common architectural frame of reference** for the TAC.
 
 The architecture must therefore be:
@@ -34,7 +40,8 @@ The architecture must therefore be:
 - neutral where multiple projects address similar problems;
 - useful for both virtual and hardware-based vehicle setups;
 - practical enough to demonstrate with a small end-to-end example;
-- extensible as new projects and capabilities enter the Working Group.
+- extensible as new projects and capabilities enter the Working Group;
+- reusable by the Eclipse SDV Landscape without creating duplicate project metadata.
 
 A practical reference example is important because architecture diagrams alone can easily become abstract. The example should force the architecture to answer concrete questions about data flow, service interaction, deployment, runtime, diagnostics, testing, and integration boundaries.
 
@@ -69,6 +76,14 @@ The mapping should make clear:
 - known integration points with other projects;
 - what the project intentionally does **not** provide.
 
+## Eclipse SDV Landscape project
+
+The [Eclipse SDV Landscape][sdv-landscape-project] should remain the visual and discoverable view of the overall project ecosystem. The capability model and architecture created through this RFC should be designed so that the Landscape can consume or link to the resulting data rather than maintaining a separate architecture taxonomy.
+
+This gives the Landscape a path from today's project categorization toward an architecture-oriented view while keeping responsibility clear: the TAC coordinates the capability model and technical relationships, and the Landscape project provides the maintained public visualization and discovery experience.
+
+The implementation should reuse the [Eclipse SDV Landscape source repository][sdv-landscape-repo] and its existing project metadata wherever practical instead of introducing another independent list of Eclipse SDV projects.
+
 ## New projects
 
 Projects seeking inclusion in the Eclipse SDV Working Group purview can use the architecture to explain where they fit and what capability they add, complement, or overlap with.
@@ -78,6 +93,8 @@ This does not replace the formal purview evaluation or any Eclipse Foundation pr
 ## Steering Committee and broader community
 
 The architecture provides a compact view of how the Eclipse SDV project portfolio contributes to a complete software-defined vehicle story. It should make technical gaps, collaboration opportunities, and areas of overlap easier to understand without requiring detailed knowledge of every project.
+
+Combined with the Eclipse SDV Landscape, stakeholders should be able to move from **what projects exist** to **where they fit in a vehicle architecture and how they can work together**.
 
 # Detailed proposal
 [detailed-proposal]: #detailed-proposal
@@ -165,7 +182,43 @@ Project maintainers should be invited to review and correct their mapping.
 
 The capability map must not be treated as a maturity ranking or project score. If the TAC wants to evaluate maturity, adoption, or project health, that should remain a separate concern.
 
-## 4. Define one small practical "Hello Vehicle" example
+## 4. Connect the Reference Vehicle Architecture to the Eclipse SDV Landscape
+
+The [Eclipse SDV Landscape][sdv-landscape-project] should be the natural public visualization and discovery surface for the capability map produced by this RFC.
+
+The two artifacts serve different but complementary purposes:
+
+| Artifact | Primary question |
+| --- | --- |
+| Eclipse SDV Landscape | **What Eclipse SDV projects exist and how can I discover them?** |
+| Reference Vehicle Architecture | **Which vehicle capabilities are needed, where do the projects fit, and how can they interact?** |
+
+The implementation should avoid two independently maintained inventories. The Landscape's existing project metadata should be reused where possible, while architecture-specific information such as capabilities, interfaces, project relationships, gaps, and integration evidence can be maintained as an additional structured data layer.
+
+A target flow could therefore be:
+
+```mermaid
+flowchart LR
+    PMI[Eclipse Project Metadata / PMI]
+    LANDDATA[Eclipse SDV Landscape Project Data]
+    CAP[SDV Capability and Architecture Metadata]
+    LAND[Eclipse SDV Landscape]
+    ARCH[Reference Vehicle Architecture View]
+
+    PMI --> LANDDATA
+    LANDDATA --> LAND
+    CAP --> LAND
+    LANDDATA --> ARCH
+    CAP --> ARCH
+```
+
+This makes the Reference Vehicle Architecture an extension of the ecosystem information already collected by the Landscape rather than a competing landscape.
+
+The [Eclipse SDV Landscape source repository][sdv-landscape-repo] should be evaluated as the preferred location or integration point for the machine-readable project/capability data and generated architecture visualization, subject to agreement between the TAC and the Landscape project team.
+
+This also aligns directly with the Landscape project's stated future direction of extending its visual representation with an architecture view.
+
+## 5. Define one small practical "Hello Vehicle" example
 
 The architecture should be validated through one deliberately small end-to-end scenario. The scenario should be simple enough to understand in approximately ten minutes and simple enough to implement first in a virtual environment.
 
@@ -196,7 +249,7 @@ The practical example should make it possible to walk through the architecture a
 
 Not every Eclipse SDV project needs to participate in the practical example. Every project should, however, be placeable in the broader architecture.
 
-## 5. Use the architecture to identify gaps and overlaps
+## 6. Use the architecture to identify gaps and overlaps
 
 Once projects are mapped, the TAC should be able to derive two useful views:
 
@@ -218,7 +271,9 @@ An overlap is not automatically duplication and should not imply consolidation. 
 - targeting different deployment environments;
 - candidates for stronger interoperability.
 
-## 6. Define a small set of maintained artifacts
+The Eclipse SDV Landscape should be able to surface these relationships visually without converting them into rankings or recommendations.
+
+## 7. Define a small set of maintained artifacts
 
 The follow-on work should produce at least:
 
@@ -227,21 +282,24 @@ The follow-on work should produce at least:
 - a project-to-capability mapping;
 - the practical "Hello Vehicle" walkthrough;
 - a list of identified capability gaps and significant overlaps;
-- links to integration examples, Blueprints, tests, or demonstrations where they exist.
+- links to integration examples, Blueprints, tests, or demonstrations where they exist;
+- an Eclipse SDV Landscape view or integration path that exposes the architecture and capability mapping to the broader community.
 
-Where practical, the project-to-capability mapping should eventually be stored in a machine-readable form in addition to the human-readable documentation. This would allow the same information to feed diagrams, the Eclipse SDV Landscape, project pages, or other tooling without maintaining several independent datasets.
+Where practical, the project-to-capability mapping should be stored in a machine-readable form in addition to the human-readable documentation. The preferred approach is to reuse or extend data already maintained by the Eclipse SDV Landscape so the same information can feed diagrams, Landscape views, project pages, or other tooling without maintaining several independent datasets.
 
-## 7. Governance and ownership
+## 8. Governance and ownership
 
 The Reference Vehicle Architecture should be treated as a TAC coordination artifact, not as a specification imposed on Eclipse projects.
 
 The TAC is responsible for the overall architecture model and capability taxonomy. Project teams remain responsible for their own technical architecture and implementation decisions.
 
+The Eclipse SDV Landscape project remains responsible for its implementation, project metadata handling, visualization, and release decisions. The TAC should provide the capability model and architectural relationships as technical input rather than directly imposing implementation changes on the Landscape project.
+
 Changes to a project's capability mapping should be reviewed with the relevant project maintainers where possible. Significant changes to the overall architecture or its purpose may require a follow-on RFC, while routine mapping and documentation updates can use normal pull requests.
 
-This RFC does not transfer authority from Eclipse projects, PMCs, the Steering Committee, or any other governing body. It gives the TAC a shared technical artifact to support its roadmap, coordination, and advisory work.
+This RFC does not transfer authority from Eclipse projects, PMCs, the Steering Committee, the Eclipse SDV Landscape project, or any other governing body. It gives the TAC a shared technical artifact to support its roadmap, coordination, and advisory work.
 
-## 8. Initial completion criteria
+## 9. Initial completion criteria
 
 The first version should be considered useful when:
 
@@ -251,7 +309,8 @@ The first version should be considered useful when:
 - project maintainers have had an opportunity to validate their mapping;
 - the practical example can be explained end-to-end using the architecture;
 - known gaps and overlaps can be identified without turning the artifact into a project ranking;
-- the model works for virtual-first setups and does not require a specific hardware platform.
+- the model works for virtual-first setups and does not require a specific hardware platform;
+- the resulting capability data can be consumed or represented by the Eclipse SDV Landscape without creating a parallel manually maintained project inventory.
 
 # Drawbacks
 [drawbacks]: #drawbacks
@@ -261,6 +320,8 @@ A simplified architecture can create the impression that automotive software sys
 Mapping projects into an architecture can also become politically sensitive if the map is interpreted as a recommendation, ranking, or statement that one project replaces another. The architecture must therefore remain capability-first and explicitly support multiple implementations for the same capability.
 
 The artifact can become stale if it is not maintained as projects evolve. It therefore needs lightweight ownership and project-maintainer review rather than a one-time TAC exercise.
+
+Connecting the architecture to the Eclipse SDV Landscape also introduces a coordination dependency between the TAC's capability model and the Landscape project's data model and visualization. This should be kept lightweight and should not block either project from evolving independently.
 
 There is also a risk of spending too much time perfecting taxonomy instead of improving integration. The practical example and one-page constraint are intended to keep the effort grounded.
 
@@ -276,11 +337,19 @@ The TAC needs an architectural tool that sits between two extremes:
 
 A capability-first reference architecture provides enough structure to coordinate the ecosystem while remaining technology-neutral and understandable.
 
-## Alternative: Maintain only a project catalog
+The Eclipse SDV Landscape provides the right existing foundation for the project-discovery side of this problem. Extending that ecosystem view with TAC-maintained capability and architecture information is preferable to introducing another standalone catalog.
 
-A project catalog or landscape is useful for discovery, but it does not adequately show runtime relationships, capability boundaries, interfaces, overlaps, or missing parts of an end-to-end system.
+## Alternative: Maintain only the Eclipse SDV Landscape
 
-The capability architecture should complement, not replace, such a catalog.
+The [Eclipse SDV Landscape][sdv-landscape-project] is useful for discovery and already provides the official visual overview of the project ecosystem, but its current scope does not attempt to provide technical integration or dependency information between projects.
+
+The capability architecture therefore complements rather than replaces the Landscape. It gives the Landscape a technical model that can later be visualized without requiring the Landscape itself to define the architecture.
+
+## Alternative: Create a separate architecture landscape
+
+A second standalone project inventory or architecture website would duplicate project metadata and risk drifting away from the Eclipse SDV Landscape.
+
+The preferred approach is to establish one project discovery dataset and add architectural relationships as another view over that ecosystem.
 
 ## Alternative: Build the architecture directly from project logos
 
@@ -302,6 +371,8 @@ The Reference Vehicle Architecture can instead provide the frame in which multip
 
 Without a shared capability model, the Working Group risks continuing to discuss projects largely in isolation. This makes technical gaps and integration opportunities harder to identify and makes the overall Eclipse SDV story more difficult to communicate.
 
+It would also leave the Eclipse SDV Landscape with project categories but without an agreed TAC-level vehicle architecture from which its planned architecture view could be developed.
+
 # Prior art
 [prior-art]: #prior-art
 
@@ -311,7 +382,11 @@ Automotive architecture frameworks, cloud-native ecosystems, and other multi-pro
 
 This RFC intentionally combines a capability map with a small practical example to avoid both extremes.
 
-The Eclipse SDV Working Group already has project catalogs, integration work, demonstrations, and Blueprints that can provide source material and integration evidence. The proposed architecture should connect those activities rather than duplicate them.
+Within the Eclipse SDV ecosystem, the [Eclipse SDV Landscape][sdv-landscape-project] is the most direct prior and complementary work. It already provides a structured visual representation of the projects under the Working Group and is built from Eclipse project metadata. Its documented scope explicitly leaves technical integration and dependencies outside the initial Landscape, while its future work includes an architecture view. This RFC provides the TAC-level technical model that can fill that gap.
+
+The [Eclipse SDV Landscape repository][sdv-landscape-repo] should therefore be treated as an existing implementation asset and possible integration point, not duplicated by this RFC.
+
+The Eclipse SDV Working Group also has integration work, demonstrations, and Blueprints that can provide source material and integration evidence. The proposed architecture should connect those activities rather than duplicate them.
 
 # Unresolved questions
 [unresolved-questions]: #unresolved-questions
@@ -319,9 +394,11 @@ The Eclipse SDV Working Group already has project catalogs, integration work, de
 The following questions should be resolved during RFC review or as explicit follow-on actions:
 
 - What is the final capability taxonomy and terminology?
-- Where should the maintained Reference Vehicle Architecture live after this RFC is accepted?
+- Should the Reference Vehicle Architecture itself live with the TAC RFC follow-on artifacts, in the Eclipse SDV Landscape repository, or be generated into both?
 - Which artifact is the authoritative source for the project-to-capability mapping?
+- Which existing Eclipse SDV Landscape metadata should be reused directly?
 - Should the capability mapping be machine-readable from the beginning or added later?
+- What changes, if any, are needed to the Eclipse SDV Landscape data model to support capability and architecture relationships?
 - What is the lightest-weight process for project maintainers to validate and update their mappings?
 - How should non-Eclipse dependencies or external standards that are necessary to explain an interface be represented?
 - How should the architecture visually represent alternative implementations and intentional overlap?
@@ -335,8 +412,9 @@ If the initial architecture proves useful, it could later support additional wor
 
 Possible extensions include:
 
-- connecting the capability model directly to the Eclipse SDV Landscape;
-- generating diagrams and project matrices from machine-readable architecture data;
+- adding the Reference Vehicle Architecture as a first-class view of the Eclipse SDV Landscape;
+- generating architecture diagrams, project matrices, and Landscape views from the same machine-readable project and capability data;
+- allowing users of the Eclipse SDV Landscape to switch between project categories and architectural capability views;
 - linking capabilities to concrete Blueprints and integration tests;
 - using the architecture as an input to new-project purview requests;
 - identifying candidate interoperability profiles between projects;
@@ -345,4 +423,7 @@ Possible extensions include:
 - tracking integration evidence separately from project maturity;
 - using uncovered capabilities as one input to the Eclipse SDV technical roadmap.
 
-The long-term value is not the diagram itself. The value is giving the TAC and the project community a shared way to reason about **how Eclipse SDV projects form a vehicle software ecosystem** and where collaboration should happen next.
+The long-term value is not the diagram itself. The value is giving the TAC and the project community a shared way to reason about **how Eclipse SDV projects form a vehicle software ecosystem** and where collaboration should happen next — with the Eclipse SDV Landscape providing the public, continuously maintained window into that ecosystem.
+
+[sdv-landscape-project]: https://projects.eclipse.org/projects/automotive.sdv-landscape
+[sdv-landscape-repo]: https://github.com/eclipse-sdv-landscape/sdv-landscape
